@@ -1,0 +1,166 @@
+---
+title: "Assignment_3"
+author: "Maliat"
+date: "2/19/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# String Manipulation
+
+```{r, include=FALSE}
+install.packages("rebus",repos = "http://cran.us.r-project.org")
+library(tidyverse)
+library(stringr)
+library(magrittr)
+library(rebus)
+library(glue)
+```
+### 1. Using the 173 majors listed in fivethirtyeight.com’s College Majors dataset [https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/], provide code that identifies the majors that contain either "DATA" or "STATISTICS"
+###Regular expression was implemented for this problem. str_detect from regular expression is used to identify "DATA" and "STATISTICS" majors.
+```{r}
+setwd("C:/Users/malia/OneDrive/Desktop/MSDS DATA 607")
+assigment3_dat<-read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/majors-list.csv")
+assigment3_dat1<-c(assigment3_dat$Major)
+  
+
+```
+
+```{r}
+head(assigment3_dat1)
+
+```
+
+
+
+```{r}
+assigment3_dat1[str_detect(assigment3_dat1,
+   pattern = "DATA"
+)]
+```
+
+
+```{r}
+assigment3_dat1[str_detect(assigment3_dat1,
+   pattern = "STATISTICS")]
+
+
+```
+### 2 Write code that transforms the data below:
+
+[1] "bell pepper"  "bilberry"     "blackberry"   "blood orange"
+
+[5] "blueberry"    "cantaloupe"   "chili pepper" "cloudberry"  
+
+[9] "elderberry"   "lime"         "lychee"       "mulberry"    
+
+[13] "olive"        "salal berry"
+
+Into a format like this:
+
+c("bell pepper", "bilberry", "blackberry", "blood orange", "blueberry", "cantaloupe", "chili pepper", "cloudberry", "elderberry", "lime", "lychee", "mulberry", "olive", "salal berry")
+
+### In order to solve this problem to create a single comma separated vector, glue_collapse was used. After that c() is used to compress the data sets in a single vector.For further manipulation st_replace_all is used to clean data by removing unwanted space, brackets etc.
+```{r}
+
+
+FRUITS1 <- '[1] "bell pepper"  "bilberry"     "blackberry"   "blood orange"
+
+[5] "blueberry"    "cantaloupe"   "chili pepper" "cloudberry"  
+
+[9] "elderberry"   "lime"         "lychee"       "mulberry"    
+
+[13] "olive"        "salal berry"'
+
+FRUITS1 <- str_extract_all(FRUITS1, "(.+?)+")
+FRUITS1 <- unlist(FRUITS1)
+
+FRUITS1
+```
+
+
+
+```{r}
+
+Fruitlist1<-glue_collapse(FRUITS1,sep = ", ")
+print(Fruitlist1)
+```
+
+```{r}
+c(Fruitlist1)
+```
+```{r}
+Fruitlist1<- str_replace_all(Fruitlist1, "[\\[\\]]", "") # for removing square brackets
+Fruitlist1 <- str_replace_all(Fruitlist1, "[!^[:digit:]]", "") #removing digits
+Fruitlist1 <- str_replace_all(Fruitlist1, "\\\n", "") #removing "\n"
+Fruitlist1 <- str_replace_all(Fruitlist1, '[\"]', "'") #replacing '\"' with "'"
+Fruitlist1<- trimws(Fruitlist1) #removing leading / trailing whitespace
+Fruitlist1 <- str_replace_all(Fruitlist1, "\\s+", " ") #compresseng whitespace
+Fruitlist1 <- str_replace_all(Fruitlist1, "' '", "','") #' ' ' --> ','
+print(Fruitlist1)
+
+```
+
+```{r}
+is.vector(Fruitlist1)
+```
+
+### 3 Describe, in words, what these expressions will match:
+### (.)\1\1
+
+### This expression will not match anything because it is incorrectly done. If it was done like this : (.)\\1\\1   it would repeat a charecter in first group then repeat it again. 
+
+### "(.)(.)\\2\\1"
+### This expression matches a first letter and a second letter in the following order: 1st letter - 2nd letter - 2nd letter - 1st letter. For instance"Beeb" "pepper".
+
+### (..)\1
+### This expression will match nothing because the correct statement looks like this:(..)\\1.if it was done correctly it will match charecters repeated twice.For instance: "LELELI".
+
+### "(.).\\1.\\1"
+### This expression will match charecter shows up 3 times with one charecter between each.For  instance: Eleven. "e" shows up three times in this word.
+
+### "(.)(.)(.).*\\3\\2\\1"
+### This expression will match three charecters in one order with * charecters between, then three charecters with three letters in the reverse order of what it started.For instance "lizpizil","bantannab"
+
+
+### 4 Construct regular expressions to match words that:
+
+###Start and end with the same character.
+
+
+
+```{r}
+word_list <- c("Apple","LIL","Orange","Blue","ELLE")  
+same_char <- "^(.).*\\1$"
+word_list %>% 
+  str_subset(same_char)
+```
+### Contain one letter repeated in at least three places (e.g. "eleven" contains three "e"s.)
+```{r}
+repeated_thrice <- c("eleven","committee","Emimtmt")  
+slicing <- "(.).\\1.\\1"
+repeated_thrice %>% 
+  str_subset(slicing)
+```
+### Contain a repeated pair of letters (e.g. "church" contains "ch" repeated twice.)
+```{r}
+repeated_twice <- c("church","papa","apple")  
+slicing1 <- "(.)(.).*\\1"
+repeated_twice %>% 
+  str_subset(slicing1)
+```
+
+
+
+
+
+
+
+
+
+
+
+
